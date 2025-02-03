@@ -15,7 +15,7 @@ import yt_dlp
 from prettytable import PrettyTable
 
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s [%(levelname)5s] %(module)8s (%(lineno)3d) %(funcName)s: %(message)s",
 )
 
