@@ -40,7 +40,7 @@ def display_data(headers: List, rows: List[Dict]) -> None:
 
     for r in rows:
         row_data = [r.get(header, "") for header in headers]
-        logging.debug(f"adding row: {row_data}")
+        logging.debug(f"adding row for printing: {row_data}")
         table.add_row(row_data)
 
     table.align = "l"
@@ -76,7 +76,7 @@ def read_csv(filename: str) -> Tuple[List[str], List[Dict[str, str]]]:
                 "composer": row["composer"],
                 "year": row["year"],
             }
-
+            logging.debug(f"read row: {obj}")
             csvRows.append(obj)
 
         return csvHeader, csvRows
@@ -146,7 +146,7 @@ def download_audio(ytLink: str, filename: str, output_directory: str) -> bool:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="A script to download audio from YouTube videos."
+        description="A script to download audio from YouTube links."
     )
 
     # csv arguments
