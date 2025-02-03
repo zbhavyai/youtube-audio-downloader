@@ -7,9 +7,10 @@ Author: zbhavyai@gmail.com
 import argparse
 import csv
 import logging
-from datetime import datetime
+import os
 from typing import Dict, List, Tuple
 
+import yt_dlp
 from prettytable import PrettyTable
 
 logging.basicConfig(
@@ -81,6 +82,68 @@ def read_csv(filename: str) -> Tuple[List[str], List[Dict[str, str]]]:
         return csvHeader, csvRows
 
 
+def download_audio(ytLink: str, filename: str, output_directory: str) -> bool:
+    """
+    Downloads audio from a YouTube link and saves it as audio file in the specified output directory.
+    Args:
+        ytLink (str): The URL of the YouTube video to download.
+        filename (str): The desired name for the downloaded audio file (without extension).
+        output_directory (str): The directory where the downloaded audio file will be saved.
+    Returns:
+        bool: True if the download was successful, False otherwise.
+    """
+    logging.debug(f'downloading: "{ytLink}" into "{output_directory}"')
+
+    if not os.path.exists(output_directory):
+        try:
+            os.makedirs(output_directory)
+            logging.debug(f'created directory: "{output_directory}"')
+        except OSError as e:
+            logging.error(f'error creating directory "{output_directory}": {e}')
+            return False
+
+    final_filename = None
+
+    def progress_hook(d):
+        nonlocal final_filename
+        if d["status"] == "finished":
+            final_filename = d["filename"]
+
+    ydl_opts = {
+        "format": "bestaudio/best",
+        "extractaudio": True,
+        "audioformat": "mp3",
+        # "postprocessors": [
+        #     {
+        #         "key": "FFmpegExtractAudio",
+        #         "preferredcodec": "mp3",
+        #         "preferredquality": "0",
+        #     }
+        # ],
+        "outtmpl": f"{output_directory}/{filename}.%(ext)s",
+        "progress_hooks": [progress_hook],
+        "quiet": True,
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([ytLink])
+
+            if final_filename:
+                just_filename = os.path.basename(final_filename)
+                logging.info(f'downloaded: "{ytLink}" as "{just_filename}"')
+
+        return os.path.exists(final_filename)
+
+    except yt_dlp.DownloadError as e:
+        logging.error(f"download error: {e}")
+        return False
+
+    except Exception as e:
+        logging.error(f"an error occurred: {e}")
+        return False
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="A script to download audio from YouTube videos."
@@ -93,12 +156,28 @@ def main() -> None:
         help="Parse the CSV file and print the contents",
     )
 
+    # download arguments
+    parser.add_argument(
+        "--url",
+        action="store",
+        help="Download audio from the given YouTube URL",
+    )
+    parser.add_argument(
+        "--filename",
+        action="store",
+        help="Use the filename for the downloaded audio file",
+    )
+
     # parse the arguments
     args = parser.parse_args()
 
     if args.csv:
         headers, data = read_csv(args.csv)
         display_data(headers, data)
+
+    elif args.url and args.filename:
+        output_path = os.path.abspath("output")
+        download_audio(args.url, args.filename, output_path)
 
     else:
         logging.error("Invalid action specified.")
