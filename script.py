@@ -8,6 +8,7 @@ import argparse
 import csv
 import logging
 import os
+import re
 from typing import Dict, List, Tuple
 
 import yt_dlp
@@ -144,6 +145,31 @@ def download_audio(ytLink: str, filename: str, output_directory: str) -> bool:
         return False
 
 
+def download_from_csv(csv_file: str, output_directory: str) -> None:
+    """
+    Downloads audio files from YouTube links specified in a CSV file.
+    Args:
+        csv_file (str): The path to the CSV file containing YouTube links.
+        output_directory (str): The directory where the downloaded audio files will be saved.
+    Returns:
+        None
+    """
+    headers, data = read_csv(csv_file)
+
+    def get_video_id(url):
+        pattern = r"(?:v=|\/)([0-9A-Za-z_-]{11}).*"
+        match = re.search(pattern, url)
+        if match:
+            return match.group(1)
+        return None
+
+    for row in data:
+        ytLink = row.get("ytLink")
+        title = row.get("title")
+        video_id = get_video_id(ytLink)
+        download_audio(ytLink, f"{title} - {video_id}", output_directory)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="A script to download audio from YouTube links."
@@ -153,10 +179,22 @@ def main() -> None:
     parser.add_argument(
         "--csv",
         action="store",
-        help="Parse the CSV file and print the contents",
+        help="The CSV file to parse",
     )
 
     # download arguments
+    parser.add_argument(
+        "--download",
+        action="store_true",
+        help="Download audio from YouTube links specified in a CSV file",
+    )
+
+    # test arguments
+    parser.add_argument(
+        "--testcsv",
+        action="store_true",
+        help="Print the data from the CSV file",
+    )
     parser.add_argument(
         "--url",
         action="store",
@@ -171,13 +209,17 @@ def main() -> None:
     # parse the arguments
     args = parser.parse_args()
 
-    if args.csv:
+    if args.testcsv and args.csv:
         headers, data = read_csv(args.csv)
         display_data(headers, data)
 
     elif args.url and args.filename:
         output_path = os.path.abspath("output")
         download_audio(args.url, args.filename, output_path)
+
+    elif args.download and args.csv:
+        output_path = os.path.abspath("output")
+        download_from_csv(args.csv, output_path)
 
     else:
         logging.error("Invalid action specified.")

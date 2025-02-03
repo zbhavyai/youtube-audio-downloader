@@ -11,13 +11,13 @@
 2. Print the contents of the CSV file
 
    ```shell
-   ./script.py --csv sample.csv
+   ./script.py --testcsv --csv sample.csv
    ```
 
 3. Downloading a single audio
 
    ```shell
-   ./script.py --url https://www.youtube.com/watch?v=5qap5aO4i9A --filename sample.mp3
+   ./script.py --url https://www.youtube.com/watch?v=D9G1VOjN_84 --filename enemy
    ```
 
 ### Running with Docker
@@ -31,11 +31,11 @@
 2. Print the contents of the CSV file
 
    ```shell
-   docker container run --volume $(pwd):/app/output --rm youtube-audio-downloader:1.0.0 --csv sample.csv
+   docker container run --volume $(pwd):/app/output --rm youtube-audio-downloader:1.0.0 --testcsv --csv sample.csv
    ```
 
 3. Downloading a single audio
 
    ```shell
-   docker container run --volume $(pwd):/app/output --rm youtube-audio-downloader:1.0.0 --url https://www.youtube.com/watch?v=5qap5aO4i9A --filename sample.mp3
+   docker container run --volume $(pwd)/output:/app/output --rm youtube-audio-downloader:1.0.0 --url https://www.youtube.com/watch?v=D9G1VOjN_84 --filename enemy
    ```
