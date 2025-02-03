@@ -14,7 +14,13 @@
    ./script.py --testcsv --csv sample.csv
    ```
 
-3. Downloading a single audio
+3. Downloading audios from CSV
+
+   ```shell
+   ./script.py --csv sample.csv --download
+   ```
+
+4. Downloading a single audio
 
    ```shell
    ./script.py --url https://www.youtube.com/watch?v=D9G1VOjN_84 --filename enemy
@@ -34,7 +40,13 @@
    docker container run --volume $(pwd):/app/output --rm youtube-audio-downloader:1.0.0 --testcsv --csv sample.csv
    ```
 
-3. Downloading a single audio
+3. Downloading audios from CSV
+
+   ```shell
+   docker container run --volume $(pwd):/app/output --rm youtube-audio-downloader:1.0.0 --csv sample.csv --download
+   ```
+
+4. Downloading a single audio
 
    ```shell
    docker container run --volume $(pwd)/output:/app/output --rm youtube-audio-downloader:1.0.0 --url https://www.youtube.com/watch?v=D9G1VOjN_84 --filename enemy
