@@ -114,13 +114,13 @@ def download_audio(ytLink: str, filename: str, output_directory: str) -> bool:
         "format": "bestaudio/best",
         "extractaudio": True,
         "audioformat": "mp3",
-        # "postprocessors": [
-        #     {
-        #         "key": "FFmpegExtractAudio",
-        #         "preferredcodec": "mp3",
-        #         "preferredquality": "0",
-        #     }
-        # ],
+        "postprocessors": [
+            {
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192",
+            }
+        ],
         "outtmpl": f"{output_directory}/{filename}.%(ext)s",
         "progress_hooks": [progress_hook],
         "quiet": True,
