@@ -43,8 +43,8 @@ def display_data(headers: List, rows: List[Dict]) -> None:
     logging.debug("logging data in table format")
 
     if not headers:
-        logging.error("Headers list is empty. Can't print the table.")
-        raise ValueError("Headers list is empty. Can't print the table.")
+        logging.error("headers list is empty, can't print the table.")
+        raise ValueError("headers list is empty, can't print the table.")
 
     table = PrettyTable()
     table.field_names = headers
