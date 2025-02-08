@@ -58,6 +58,22 @@ def display_data(headers: List, rows: List[Dict]) -> None:
     logging.info(f"\n{table}")
 
 
+def format_multiple_artists(artists: str) -> str:
+    """
+    Splits on ',', trims spaces, and joins using ' / '.
+    Args:
+        artists (str): A string of multiple artists or composers separated by a comma.
+    Returns:
+        str: A single string of artists or composers separated by a ' / '.
+    """
+    logging.debug(f'formatting multiple artists: "{artists}"')
+
+    if not artists:
+        return ""
+
+    return " / ".join(part.strip() for part in artists.split(",")) if artists else ""
+
+
 def read_csv(file_path: str) -> Tuple[List[str], List[Dict[str, str]]]:
     """
     Reads a CSV file and returns its header and rows.
@@ -83,8 +99,8 @@ def read_csv(file_path: str) -> Tuple[List[str], List[Dict[str, str]]]:
                 "ytLink": row["ytLink"],
                 "title": row["title"],
                 "album": row["album"],
-                "artist": row["artist"],
-                "composer": row["composer"],
+                "artist": format_multiple_artists(row["artist"]),
+                "composer": format_multiple_artists(row["composer"]),
                 "year": row["year"],
             }
             logging.debug(f"read row: {obj}")
