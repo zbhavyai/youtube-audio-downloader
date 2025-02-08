@@ -279,21 +279,27 @@ def set_metadata(file_path: str, metadata: Dict[str, str]) -> bool:
         audio.tags = ID3()
 
         if "title" in metadata:
+            logging.debug(f'setting title: "{metadata["title"]}"')
             audio.tags.add(TIT2(encoding=3, text=metadata["title"]))
 
         if "artist" in metadata:
+            logging.debug(f'setting artist: "{metadata["artist"]}"')
             audio.tags.add(TPE1(encoding=3, text=metadata["artist"]))
 
         if "album" in metadata:
+            logging.debug(f'setting album: "{metadata["album"]}"')
             audio.tags.add(TALB(encoding=3, text=metadata["album"]))
 
         if "composer" in metadata:
+            logging.debug(f'setting composer: "{metadata["composer"]}"')
             audio.tags.add(TCOM(encoding=3, text=metadata["composer"]))
 
         if "year" in metadata:
+            logging.debug(f'setting year: "{metadata["year"]}"')
             audio.tags.add(TDRC(encoding=3, text=metadata["year"]))
 
-        if "comments" in metadata:
+        if "ytLink" in metadata:
+            logging.debug(f'setting comments: "{metadata["ytLink"]}"')
             audio.tags.add(COMM(encoding=3, lang="eng", desc="", text=metadata["ytLink"]))
 
         audio.save()
