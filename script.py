@@ -106,9 +106,14 @@ def download_audio(ytLink: str, filename: str, output_directory: str) -> bool:
     final_filename = None
 
     def progress_hook(d):
-        nonlocal final_filename
         if d["status"] == "finished":
-            final_filename = d["filename"]
+            logging.debug(f'Finished downloading "{os.path.basename(d["filename"])}"')
+
+    def postprocessor_hook(d):
+        nonlocal final_filename
+        if d["status"] == "finished" and d["postprocessor"] == "MoveFiles":
+            final_filename = d["info_dict"]["filepath"]
+            logging.debug(f'Finished processing "{os.path.basename(final_filename)}"')
 
     ydl_opts = {
         "format": "bestaudio/best",
@@ -123,7 +128,9 @@ def download_audio(ytLink: str, filename: str, output_directory: str) -> bool:
         ],
         "outtmpl": f"{output_directory}/{filename}.%(ext)s",
         "progress_hooks": [progress_hook],
+        "postprocessor_hooks": [postprocessor_hook],
         "quiet": True,
+        "noprogress": True,
     }
 
     try:
