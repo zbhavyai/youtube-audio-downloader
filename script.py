@@ -145,7 +145,7 @@ def download_audio(ytLink: str, filename: str, output_directory: str) -> bool:
         return False
 
 
-def download_from_csv(csv_file: str, output_directory: str) -> None:
+def download_audio_from_csv(csv_file: str, output_directory: str) -> None:
     """
     Downloads audio files from YouTube links specified in a CSV file.
     Args:
@@ -219,7 +219,7 @@ def main() -> None:
 
     elif args.download and args.csv:
         output_path = os.path.abspath("output")
-        download_from_csv(args.csv, output_path)
+        download_audio_from_csv(args.csv, output_path)
 
     else:
         logging.error("Invalid action specified.")
