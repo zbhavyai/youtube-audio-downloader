@@ -17,9 +17,16 @@ from mutagen.id3 import COMM, ID3, TALB, TCOM, TDRC, TIT2, TPE1
 from mutagen.mp3 import MP3
 from prettytable import PrettyTable
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+log_file = os.path.join(script_dir, "script.log")
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)5s] %(module)8s (%(lineno)3d) %(funcName)s: %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(log_file, mode="w", encoding="utf-8"),
+    ],
 )
 
 
