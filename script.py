@@ -12,6 +12,7 @@ import re
 from typing import Dict, List, Tuple
 
 import yt_dlp
+from mutagen import File
 from mutagen.id3 import COMM, ID3, TALB, TCOM, TDRC, TIT2, TPE1
 from mutagen.mp3 import MP3
 from prettytable import PrettyTable
@@ -186,6 +187,46 @@ def download_audio_from_csv(csv_file: str, o_directory: str) -> None:
             set_metadata(file, row)
 
 
+def clean_metadata(filename: str) -> bool:
+    """
+    Removes all metadata from an audio file.
+    Args:
+        filename (str): Path to the audio file.
+    Returns:
+        bool: True if metadata was successfully removed, False otherwise.
+    """
+    try:
+        audio = File(filename, easy=True)
+        if audio is None:
+            logging.error(f'corrupt file "{filename}"')
+            return False
+
+        audio.delete()
+        audio.save()
+        logging.info(f'cleaned metadata for "{filename}"')
+        return True
+
+    except Exception as e:
+        logging.error(f"failed to clean metadata for {filename}: {e}")
+        return False
+
+
+def clean_metadata_directory(directory: str) -> None:
+    """
+    Removes all metadata from audio files in a directory.
+    Args:
+        directory (str): The directory containing audio files.
+    Returns:
+        None
+    """
+    logging.debug(f'cleaning metadata in "{directory}"')
+
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if file.endswith(".mp3"):
+                clean_metadata(os.path.join(root, file))
+
+
 def set_metadata(filename: str, metadata: Dict[str, str]) -> bool:
     """
     Sets the metadata for an MP3 file.
@@ -277,6 +318,13 @@ def main() -> None:
         help="Use the filename for the downloaded audio file",
     )
 
+    # metadata arguments
+    parser.add_argument(
+        "--clean",
+        action="store_true",
+        help="Clean all metadata from given audio files",
+    )
+
     # parse the arguments
     args = parser.parse_args()
 
@@ -291,6 +339,10 @@ def main() -> None:
     elif args.download and args.csv:
         output_path = os.path.abspath("output")
         download_audio_from_csv(args.csv, output_path)
+
+    elif args.clean:
+        output_path = os.path.abspath("output")
+        clean_metadata_directory(output_path)
 
     else:
         logging.error("Invalid action specified.")
