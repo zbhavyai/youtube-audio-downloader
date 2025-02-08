@@ -12,6 +12,8 @@ import re
 from typing import Dict, List, Tuple
 
 import yt_dlp
+from mutagen.id3 import COMM, ID3, TALB, TCOM, TDRC, TIT2, TPE1
+from mutagen.mp3 import MP3
 from prettytable import PrettyTable
 
 logging.basicConfig(
@@ -83,24 +85,26 @@ def read_csv(filename: str) -> Tuple[List[str], List[Dict[str, str]]]:
         return csvHeader, csvRows
 
 
-def download_audio(ytLink: str, filename: str, output_directory: str) -> bool:
+def download_audio(ytLink: str, filename: str, o_directory: str) -> Tuple[bool, str]:
     """
-    Downloads audio from a YouTube link and saves it as audio file in the specified output directory.
+    Downloads audio from a YouTube link and saves it as an audio file in the specified output directory.
     Args:
         ytLink (str): The URL of the YouTube video to download.
         filename (str): The desired name for the downloaded audio file (without extension).
-        output_directory (str): The directory where the downloaded audio file will be saved.
+        o_directory (str): The directory where the downloaded audio file will be saved.
     Returns:
-        bool: True if the download was successful, False otherwise.
+        Tuple[bool, str]: A tuple containing:
+            - bool: True if the download was successful, False otherwise.
+            - str: The path to the downloaded audio file.
     """
-    logging.debug(f'downloading: "{ytLink}" into "{output_directory}"')
+    logging.debug(f'downloading: "{ytLink}" into "{o_directory}"')
 
-    if not os.path.exists(output_directory):
+    if not os.path.exists(o_directory):
         try:
-            os.makedirs(output_directory)
-            logging.debug(f'created directory: "{output_directory}"')
+            os.makedirs(o_directory)
+            logging.debug(f'created directory: "{o_directory}"')
         except OSError as e:
-            logging.error(f'error creating directory "{output_directory}": {e}')
+            logging.error(f'error creating directory "{o_directory}": {e}')
             return False
 
     final_filename = None
@@ -126,7 +130,7 @@ def download_audio(ytLink: str, filename: str, output_directory: str) -> bool:
                 "preferredquality": "192",
             }
         ],
-        "outtmpl": f"{output_directory}/{filename}.%(ext)s",
+        "outtmpl": f"{o_directory}/{filename}.%(ext)s",
         "progress_hooks": [progress_hook],
         "postprocessor_hooks": [postprocessor_hook],
         "quiet": True,
@@ -139,28 +143,30 @@ def download_audio(ytLink: str, filename: str, output_directory: str) -> bool:
 
             if final_filename:
                 just_filename = os.path.basename(final_filename)
-                logging.info(f'downloaded: "{ytLink}" as "{just_filename}"')
+                logging.info(f'downloaded "{ytLink}" as "{just_filename}"')
 
-        return os.path.exists(final_filename)
+        return (os.path.exists(final_filename), final_filename)
 
     except yt_dlp.DownloadError as e:
         logging.error(f"download error: {e}")
-        return False
+        return (False, None)
 
     except Exception as e:
         logging.error(f"an error occurred: {e}")
-        return False
+        return (False, None)
 
 
-def download_audio_from_csv(csv_file: str, output_directory: str) -> None:
+def download_audio_from_csv(csv_file: str, o_directory: str) -> None:
     """
     Downloads audio files from YouTube links specified in a CSV file.
     Args:
         csv_file (str): The path to the CSV file containing YouTube links.
-        output_directory (str): The directory where the downloaded audio files will be saved.
+        o_directory (str): The directory where the downloaded audio files will be saved.
     Returns:
         None
     """
+    logging.debug(f'downloading audio from "{csv_file}" into "{o_directory}"')
+
     headers, data = read_csv(csv_file)
 
     def get_video_id(url):
@@ -174,7 +180,65 @@ def download_audio_from_csv(csv_file: str, output_directory: str) -> None:
         ytLink = row.get("ytLink")
         title = row.get("title")
         video_id = get_video_id(ytLink)
-        download_audio(ytLink, f"{title} - {video_id}", output_directory)
+        (status, file) = download_audio(ytLink, f"{title} - {video_id}", o_directory)
+
+        if status:
+            set_metadata(file, row)
+
+
+def set_metadata(filename: str, metadata: Dict[str, str]) -> bool:
+    """
+    Sets the metadata for an MP3 file.
+    Args:
+        filename (str): The path to the MP3 file.
+        metadata (Dict[str, str]): A dictionary containing metadata to be set.
+            Possible keys are:
+                - "title": The title of the track.
+                - "artist": The artist of the track.
+                - "album": The album name.
+                - "composer": The composer of the track.
+                - "year": The year of release.
+                - "comments": Additional comments, such as a YouTube link.
+    Returns:
+        bool: True if metadata was set successfully, False otherwise.
+    """
+    logging.debug(f'setting metadata for "{filename}"')
+
+    if not os.path.exists(filename):
+        logging.error(f'file "{filename}" does not exist')
+        return False
+
+    try:
+        audio = MP3(filename, ID3=ID3)
+        audio.tags = ID3()
+
+        if "title" in metadata:
+            audio.tags.add(TIT2(encoding=3, text=metadata["title"]))
+
+        if "artist" in metadata:
+            audio.tags.add(TPE1(encoding=3, text=metadata["artist"]))
+
+        if "album" in metadata:
+            audio.tags.add(TALB(encoding=3, text=metadata["album"]))
+
+        if "composer" in metadata:
+            audio.tags.add(TCOM(encoding=3, text=metadata["composer"]))
+
+        if "year" in metadata:
+            audio.tags.add(TDRC(encoding=3, text=metadata["year"]))
+
+        if "comments" in metadata:
+            audio.tags.add(
+                COMM(encoding=3, lang="eng", desc="", text=metadata["ytLink"])
+            )
+
+        audio.save()
+        logging.debug(f'metadata set for "{filename}"')
+        return True
+
+    except Exception as e:
+        logging.error(f'metadata error for "{filename}": {e}')
+        return False
 
 
 def main() -> None:
