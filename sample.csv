@@ -1,7 +1,10 @@
-ytLink,title,album,artist,composer,year
-https://www.youtube.com/watch?v=7wtfhZwyrcc,Believer,Evolve,Imagine Dragons,"Dan Reynolds, Wayne Sermon, Ben McKee, Daniel Platzman, Justin Tranter, Mattias Larsson, Robin Fredriksson",2017
-https://www.youtube.com/watch?v=D9G1VOjN_84,Enemy,Arcane League of Legends,Imagine Dragons & JID,"Dan Reynolds, Wayne Sermon, Ben McKee, Daniel Platzman, JID, Justin Tranter, Mattias Larsson, Robin Fredriksson",2021
-https://www.youtube.com/watch?v=eVTXPUF4Oz4,In The End,Hybrid Theory,Linkin Park,"Mike Shinoda, Brad Delson, Chester Bennington, Rob Bourdon",2000
-https://www.youtube.com/watch?v=cfhwSpSDA9c,Unstoppable,This Is Acting,Sia,"Sia Furler, Christopher Braide",2016
-https://www.youtube.com/watch?v=pxCWiYFkvTg,Aatma Rama,,Sai Vignesh,Traditional (based on devotional Sanskrit verses),2023
-https://www.youtube.com/watch?v=qP-7GNoDJ5c,Wellerman,Wellerman (Sea Shanty),Nathan Evans,"Traditional (New Zealand folk song, adapted)",2021
+ytLink,title,album,artist,composer,year,genre
+https://www.youtube.com/watch?v=7wtfhZwyrcc,Believer,Evolve,Imagine Dragons,"Dan Reynolds, Wayne Sermon, Ben McKee, Daniel Platzman, Justin Tranter, Mattias Larsson, Robin Fredriksson",2017,English
+https://www.youtube.com/watch?v=D9G1VOjN_84,Enemy,Arcane League of Legends,Imagine Dragons & JID,"Dan Reynolds, Wayne Sermon, Ben McKee, Daniel Platzman, JID, Justin Tranter, Mattias Larsson, Robin Fredriksson",2021,English
+https://www.youtube.com/watch?v=eVTXPUF4Oz4,In The End,Hybrid Theory,Linkin Park,"Mike Shinoda, Brad Delson, Chester Bennington, Rob Bourdon",2000,English
+https://www.youtube.com/watch?v=cfhwSpSDA9c,Unstoppable,This Is Acting,Sia,"Sia Furler, Christopher Braide",2016,English
+https://www.youtube.com/watch?v=pxCWiYFkvTg,Aatma Rama,,Vighnesh Shivanand,Traditional (based on devotional Sanskrit verses),2023,English
+https://www.youtube.com/watch?v=qP-7GNoDJ5c,Wellerman,Wellerman (Sea Shanty),Nathan Evans,"Traditional (New Zealand folk song, adapted)",2021,English
+https://www.youtube.com/watch?v=GzU8KqOY8YA,No Lies,Mad Love the Prequel,"Sean Paul, Dua Lipa","Sean Paul, Andrew Jackson, Emily Warren, Jamie Sermstyle Sanderson, Philip Kembo",2016,English
+https://www.youtube.com/watch?v=CevxZvSJLk8,Roar,Prism,Katy Perry,"Katy Perry, Lukasz Gottwald, Max Martin, Bonnie McKee, Henry Walter",2013,English
+https://www.youtube.com/watch?v=kJQP7kiw5Fk,Despacito,Vida,"Luis Fonsi, Ramon Ayala Rodriguez","Luis Fonsi, Erika Ender, Ramon Ayala Rodriguez",2017,English
