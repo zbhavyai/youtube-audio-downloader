@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple
 
 import yt_dlp
 from mutagen import File
-from mutagen.id3 import COMM, ID3, TALB, TCOM, TDRC, TIT2, TPE1
+from mutagen.id3 import COMM, ID3, TALB, TCOM, TCON, TDRC, TIT2, TPE1
 from mutagen.mp3 import MP3
 from prettytable import PrettyTable
 
@@ -92,7 +92,7 @@ def read_csv(file_path: str) -> Tuple[List[str], List[Dict[str, str]]]:
     with open(file_path, "r", newline="") as file:
         reader = csv.DictReader(file)
 
-        csvHeader = ["ytLink", "title", "album", "artist", "composer", "year"]
+        csvHeader = ["ytLink", "title", "artist", "album", "composer", "year", "genre"]
 
         for row in reader:
             obj = {
@@ -102,6 +102,7 @@ def read_csv(file_path: str) -> Tuple[List[str], List[Dict[str, str]]]:
                 "artist": format_multiple_artists(row["artist"]),
                 "composer": format_multiple_artists(row["composer"]),
                 "year": row["year"],
+                "genre": row["genre"],
             }
             logging.debug(f"read row: {obj}")
             csvRows.append(obj)
@@ -264,6 +265,7 @@ def set_metadata(file_path: str, metadata: Dict[str, str]) -> bool:
                 - "album": The album name.
                 - "composer": The composer of the track.
                 - "year": The year of release.
+                - "genre": The genre of the track.
                 - "comments": Additional comments, such as a YouTube link.
     Returns:
         bool: True if metadata was set successfully, False otherwise.
@@ -297,6 +299,10 @@ def set_metadata(file_path: str, metadata: Dict[str, str]) -> bool:
         if "year" in metadata:
             logging.debug(f'setting year: "{metadata["year"]}"')
             audio.tags.add(TDRC(encoding=3, text=metadata["year"]))
+
+        if "genre" in metadata:
+            logging.debug(f'setting genre: "{metadata["genre"]}"')
+            audio.tags.add(TCON(encoding=3, text=metadata["genre"]))
 
         if "ytLink" in metadata:
             logging.debug(f'setting comments: "{metadata["ytLink"]}"')
