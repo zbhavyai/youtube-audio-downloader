@@ -1,21 +1,17 @@
 {
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": "always",
-        "source.addMissingImports": "always",
-    },
-    "editor.formatOnSave": true,
-    "python.terminal.activateEnvironment": true,
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
-    },
-    "[markdown]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.tabSize": 3
-    },
-    "prettier.jsxSingleQuote": false,
-    "prettier.singleQuote": false,
-    "prettier.printWidth": 200,
-    "prettier.tabWidth": 2,
-    "prettier.trailingComma": "all",
-    "prettier.useTabs": false,
+  "editor.codeActionsOnSave": { "source.organizeImports": "always", "source.addMissingImports": "always" },
+  "editor.formatOnSave": true,
+  "editor.insertSpaces": true,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "python.terminal.activateEnvironment": true,
+  "[python]": { "editor.defaultFormatter": "ms-python.black-formatter" },
+  "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode", "editor.tabSize": 3 },
+  "prettier.jsxSingleQuote": false,
+  "prettier.singleQuote": false,
+  "prettier.printWidth": 200,
+  "prettier.tabWidth": 2,
+  "prettier.trailingComma": "all",
+  "prettier.useTabs": false
 }
