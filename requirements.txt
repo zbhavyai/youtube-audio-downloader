@@ -1,4 +1,4 @@
-argparse
-prettytable
-yt-dlp
-mutagen
+prettytable==3.14.0
+yt-dlp==2025.1.26
+mutagen==1.47.0
+python-dotenv==1.0.1
