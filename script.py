@@ -12,12 +12,9 @@ import re
 from typing import Dict, List, Tuple
 
 import yt_dlp
-from mutagen import File
-from mutagen.id3 import COMM, ID3, TALB, TCOM, TCON, TDRC, TIT2, TPE1
-from mutagen.mp3 import MP3
 from prettytable import PrettyTable
 
-from metadata import clean_metadata, clean_metadata_directory, set_metadata
+from metadata import clean_metadata_directory, set_metadata
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 log_file = os.path.join(script_dir, "script.log")

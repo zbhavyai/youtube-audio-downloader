@@ -6,7 +6,7 @@ Author: zbhavyai@gmail.com
 
 import logging
 import os
-from typing import Dict, List, Tuple
+from typing import Dict
 
 from mutagen import File
 from mutagen.id3 import COMM, ID3, TALB, TCOM, TCON, TDRC, TIT2, TPE1
