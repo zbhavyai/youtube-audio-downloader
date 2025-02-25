@@ -3,8 +3,8 @@ LABEL maintainer="https://zbhavyai.github.io"
 LABEL repo="https://github.com/zbhavyai/youtube-audio-downloader"
 WORKDIR /app
 COPY requirements.txt .
-COPY *py .
-COPY *csv .
+COPY src /app/src
+COPY samples /app/samples
 RUN pip install --no-cache-dir --requirement requirements.txt
-ENTRYPOINT ["python", "script.py"]
+ENTRYPOINT ["python", "-m", "src"]
 CMD []
