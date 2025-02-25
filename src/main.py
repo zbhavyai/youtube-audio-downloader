@@ -2,7 +2,7 @@
 
 import argparse
 
-from .config import OUTPUT_DIR, get_logger
+from .config import OUTPUT_DIR, VERSION, get_logger
 from .csv_handler import read_csv
 from .downloader import download_audio, download_audio_from_csv
 from .metadata import clean_metadata_directory
@@ -12,7 +12,11 @@ logger = get_logger(__name__)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="A script to download audio from YouTube links.")
+    parser = argparse.ArgumentParser(
+        prog="youtube_audio_downloader",
+        description="A script to download audio from YouTube links.",
+        epilog="Made by https://zbhavyai.github.io",
+    )
 
     parser.add_argument("--csv", action="store", help="The CSV file to parse")
     parser.add_argument("--download", action="store_true", help="Download audio from YouTube links specified in a CSV file")
@@ -20,6 +24,7 @@ def main() -> None:
     parser.add_argument("--url", action="store", help="Download audio from the given YouTube URL")
     parser.add_argument("--filename", action="store", help="Use the filename for the downloaded audio file")
     parser.add_argument("--clean", action="store_true", help="Clean all metadata from given audio files")
+    parser.add_argument("--version", action="store_true", help="Print the version of the script")
 
     args = parser.parse_args()
 
@@ -32,6 +37,8 @@ def main() -> None:
         download_audio_from_csv(args.csv, OUTPUT_DIR)
     elif args.clean:
         clean_metadata_directory(OUTPUT_DIR)
+    elif args.version:
+        logger.info(f"version: {VERSION}")
     else:
         logger.error("Invalid action specified.")
         parser.error("Invalid action specified.")

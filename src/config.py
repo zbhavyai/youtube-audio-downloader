@@ -5,6 +5,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(BASE_DIR, "..", "output")
 LOG_DIR = os.path.join(BASE_DIR, "..", "logs")
 LOG_FILE = os.path.join(LOG_DIR, "script.log")
+VERSION = "1.0.0"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(LOG_DIR, exist_ok=True)
