@@ -6,7 +6,6 @@ Author: zbhavyai@gmail.com
 
 import logging
 import os
-from typing import Dict
 
 from mutagen import File
 from mutagen.id3 import COMM, ID3, TALB, TCOM, TCON, TDRC, TIT2, TPE1
@@ -71,22 +70,20 @@ def clean_metadata_directory(target_directory: str) -> None:
                 clean_metadata(os.path.join(root, file))
 
 
-def set_metadata(file_path: str, metadata: Dict[str, str]) -> bool:
+def set_metadata(file_path: str, title: str, artist: str, album: str, composer: str, year: int, genre: str, comments: str) -> bool:
     """
     Sets the metadata for an MP3 file.
     Args:
         file_path (str): The path to the MP3 file.
-        metadata (Dict[str, str]): A dictionary containing metadata to be set.
-            Possible keys are:
-                - "title": The title of the track.
-                - "artist": The artist of the track.
-                - "album": The album name.
-                - "composer": The composer of the track.
-                - "year": The year of release.
-                - "genre": The genre of the track.
-                - "comments": Additional comments, such as a YouTube link.
+        title (str): The title of the track.
+        artist (str): The artist of the track.
+        album (str): The album name.
+        composer (str): The composer of the track.
+        year (int): The year of release.
+        genre (str): The genre of the track.
+        comments (str): Additional comments, such as a YouTube link.
     Returns:
-        bool: True if metadata was set successfully, False otherwise.
+        bool: `True` if metadata was set successfully, `False` otherwise.
     """
     logging.debug(f'setting metadata for "{file_path}"')
 
@@ -98,33 +95,33 @@ def set_metadata(file_path: str, metadata: Dict[str, str]) -> bool:
         audio = MP3(file_path, ID3=ID3)
         audio.tags = ID3()
 
-        if "title" in metadata:
-            logging.debug(f'setting title: "{metadata["title"]}"')
-            audio.tags.add(TIT2(encoding=3, text=metadata["title"]))
+        if title:
+            logging.debug(f'setting title: "{title}"')
+            audio.tags.add(TIT2(encoding=3, text=title))
 
-        if "artist" in metadata:
-            logging.debug(f'setting artist: "{metadata["artist"]}"')
-            audio.tags.add(TPE1(encoding=3, text=metadata["artist"]))
+        if artist:
+            logging.debug(f'setting artist: "{artist}"')
+            audio.tags.add(TPE1(encoding=3, text=artist))
 
-        if "album" in metadata:
-            logging.debug(f'setting album: "{metadata["album"]}"')
-            audio.tags.add(TALB(encoding=3, text=metadata["album"]))
+        if album:
+            logging.debug(f'setting album: "{album}"')
+            audio.tags.add(TALB(encoding=3, text=album))
 
-        if "composer" in metadata:
-            logging.debug(f'setting composer: "{metadata["composer"]}"')
-            audio.tags.add(TCOM(encoding=3, text=metadata["composer"]))
+        if composer:
+            logging.debug(f'setting composer: "{composer}"')
+            audio.tags.add(TCOM(encoding=3, text=composer))
 
-        if "year" in metadata:
-            logging.debug(f'setting year: "{metadata["year"]}"')
-            audio.tags.add(TDRC(encoding=3, text=metadata["year"]))
+        if year:
+            logging.debug(f'setting year: "{year}"')
+            audio.tags.add(TDRC(encoding=3, text=year))
 
-        if "genre" in metadata:
-            logging.debug(f'setting genre: "{metadata["genre"]}"')
-            audio.tags.add(TCON(encoding=3, text=metadata["genre"]))
+        if genre:
+            logging.debug(f'setting genre: "{genre}"')
+            audio.tags.add(TCON(encoding=3, text=genre))
 
-        if "ytLink" in metadata:
-            logging.debug(f'setting comments: "{metadata["ytLink"]}"')
-            audio.tags.add(COMM(encoding=3, lang="eng", desc="", text=metadata["ytLink"]))
+        if comments:
+            logging.debug(f'setting comments: "{comments}"')
+            audio.tags.add(COMM(encoding=3, lang="eng", desc="", text=comments))
 
         audio.save()
         logging.debug(f'metadata set for "{file_path}"')

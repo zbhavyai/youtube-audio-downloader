@@ -91,9 +91,10 @@ def read_csv(file_path: str) -> Tuple[List[str], List[Dict[str, str]]]:
     with open(file_path, "r", newline="") as file:
         reader = csv.DictReader(file)
 
-        csvHeader = ["ytLink", "title", "artist", "album", "composer", "year", "genre"]
+        csvHeader = ["ytLink", "title", "artist", "album", "composer", "year", "genre", "start_time", "end_time"]
 
         for row in reader:
+            logging.debug(f"read row: {row}")
             obj = {
                 "ytLink": row["ytLink"],
                 "title": row["title"],
@@ -102,18 +103,21 @@ def read_csv(file_path: str) -> Tuple[List[str], List[Dict[str, str]]]:
                 "composer": format_multiple_artists(row["composer"]),
                 "year": row["year"],
                 "genre": row["genre"],
+                "start_time": row.get("start_time", ""),
+                "end_time": row.get("end_time", ""),
             }
-            logging.debug(f"read row: {obj}")
             csvRows.append(obj)
 
         return csvHeader, csvRows
 
 
-def download_audio(yt_link: str, file_name: str, output_directory: str) -> Tuple[bool, str]:
+def download_audio(yt_link: str, start_time: str, end_time: str, file_name: str, output_directory: str) -> Tuple[bool, str]:
     """
     Downloads audio from a YouTube link and saves it as an audio file in the specified output directory.
     Args:
         yt_link (str): The URL of the YouTube video to download.
+        start_time (str): Start time for trimming.
+        end_time (str): End time for trimming.
         file_name (str): The desired name for the downloaded audio file (without extension).
         output_directory (str): The directory where the downloaded audio file will be saved.
     Returns:
@@ -129,7 +133,7 @@ def download_audio(yt_link: str, file_name: str, output_directory: str) -> Tuple
             logging.debug(f'created directory: "{output_directory}"')
         except OSError as e:
             logging.error(f'error creating directory "{output_directory}": {e}')
-            return False
+            return (False, None)
 
     final_filename = None
 
@@ -145,6 +149,9 @@ def download_audio(yt_link: str, file_name: str, output_directory: str) -> Tuple
 
     ydl_opts = {
         "format": "bestaudio/best",
+        "external_downloader": "ffmpeg",
+        "external_downloader_args": {"default": ["-ss", "00:00:30"]},
+        # "external_downloader_args": {"ffmpeg_i": ["-ss", "00:00:11", "-to", "00:00:20"]},
         "extractaudio": True,
         "audioformat": "mp3",
         "postprocessors": [
@@ -204,7 +211,9 @@ def download_audio_from_csv(file_path: str, output_directory: str) -> None:
         ytLink = row.get("ytLink")
         title = row.get("title")
         video_id = get_video_id(ytLink)
-        (status, file) = download_audio(ytLink, f"{title} - {video_id}", output_directory)
+        start_time = row.get("start_time", "")
+        end_time = row.get("end_time", "")
+        (status, file) = download_audio(ytLink, start_time, end_time, f"{title} - {video_id}", output_directory)
 
         if status:
             set_metadata(file, row)
