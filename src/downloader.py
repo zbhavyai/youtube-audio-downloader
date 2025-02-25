@@ -65,6 +65,16 @@ def download_audio(yt_link: str, start_time: str, end_time: str, file_name: str,
         "noprogress": True,
     }
 
+    trim_opts = []
+    if start_time and start_time != "00:00:00":
+        trim_opts += ["-ss", start_time]
+    if end_time and end_time != "00:00:00":
+        trim_opts += ["-to", end_time]
+
+    if trim_opts:
+        ydl_opts["external_downloader"] = "ffmpeg"
+        ydl_opts["external_downloader_args"] = {"default": trim_opts}
+
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([yt_link])
