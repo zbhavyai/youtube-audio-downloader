@@ -2,7 +2,7 @@
 
 import argparse
 
-from .config import VERSION, get_logger
+from .config import OUTPUT_DIR, VERSION, get_logger
 from .csv_handler import read_csv
 from .downloader import download_audio, download_audio_from_csv
 from .metadata import clean_metadata, print_metadata, set_metadata
@@ -26,7 +26,7 @@ def get_parser() -> argparse.ArgumentParser:
 
     subparsers = parser.add_subparsers(dest="group", required=True, help="Select a group")
 
-    # Metadata group
+    # metadata
     metadata_parser = subparsers.add_parser("metadata", help="Manipulate metadata of audio files")
     metadata_subparsers = metadata_parser.add_subparsers(dest="action", required=True, help="Metadata actions")
 
@@ -46,25 +46,25 @@ def get_parser() -> argparse.ArgumentParser:
     meta_set.add_argument("--comment", required=False, default="", help="Comment")
     meta_set.add_argument("--genre", required=False, default="", help="Genre")
 
-    # Download group
+    # download
     download_parser = subparsers.add_parser("download", help="Download audio from YouTube URL")
     download_parser.add_argument("--url", required=True, help="YouTube video URL")
     download_parser.add_argument("--output", required=True, help="Output file path")
 
-    # Trim group
+    # trim
     trim_parser = subparsers.add_parser("trim", help="Trim an audio file")
     trim_parser.add_argument("--file", required=True, help="Input file path")
     trim_parser.add_argument("--start", required=True, help="Start time (in seconds)")
     trim_parser.add_argument("--end", required=True, help="End time (in seconds)")
     trim_parser.add_argument("--output", required=True, help="Output file path")
 
-    # CSV group
+    # csv
     csv_parser = subparsers.add_parser("csv", help="Process CSV file")
     csv_parser.add_argument("--file", required=True, help="CSV file path")
     csv_parser.add_argument("--print", action="store_true", help="Print CSV data")
     csv_parser.add_argument("--download", action="store_true", help="Download from CSV file")
 
-    # Version
+    # version
     version_parser = subparsers.add_parser("version", help="Print version")
 
     return parser
@@ -83,7 +83,7 @@ def main():
             set_metadata(args.file, args.title, args.artist, args.year, args.composer, args.comment, args.genre, args.album)
 
     elif args.group == "download":
-        download_audio(args.url, args.output)
+        download_audio(args.url, args.output, OUTPUT_DIR)
 
     elif args.group == "trim":
         # trim_audio(args.file, args.start, args.end, args.output)

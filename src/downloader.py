@@ -11,13 +11,11 @@ from .metadata import set_metadata
 logger = get_logger(__name__)
 
 
-def download_audio(yt_link: str, start_time: str, end_time: str, file_name: str, output_directory: str) -> Tuple[bool, str]:
+def download_audio(yt_link: str, file_name: str, output_directory: str) -> Tuple[bool, str]:
     """
     Downloads audio from a YouTube link and saves it as an audio file in the specified output directory.
     Args:
         yt_link (str): The URL of the YouTube video to download.
-        start_time (str): Start time for trimming.
-        end_time (str): End time for trimming.
         file_name (str): The desired name for the downloaded audio file (without extension).
         output_directory (str): The directory where the downloaded audio file will be saved.
     Returns:
@@ -65,15 +63,16 @@ def download_audio(yt_link: str, start_time: str, end_time: str, file_name: str,
         "noprogress": True,
     }
 
-    trim_opts = []
-    if start_time and start_time != "00:00:00":
-        trim_opts += ["-ss", start_time]
-    if end_time and end_time != "00:00:00":
-        trim_opts += ["-to", end_time]
+    # ffmpeg makes downloading too slow, don't use it
+    # trim_opts = []
+    # if start_time and start_time != "00:00:00":
+    #     trim_opts += ["-ss", start_time]
+    # if end_time and end_time != "00:00:00":
+    #     trim_opts += ["-to", end_time]
 
-    if trim_opts:
-        ydl_opts["external_downloader"] = "ffmpeg"
-        ydl_opts["external_downloader_args"] = {"default": trim_opts}
+    # if trim_opts:
+    #     ydl_opts["external_downloader"] = "ffmpeg"
+    #     ydl_opts["external_downloader_args"] = {"default": trim_opts}
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
