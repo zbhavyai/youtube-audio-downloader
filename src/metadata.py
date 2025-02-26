@@ -11,59 +11,24 @@ from .table import display_data
 logger = get_logger(__name__)
 
 
-def clean_metadata_file(file_path: str) -> bool:
+def print_metadata(file_or_directory_path: str) -> None:
     """
-    Removes all metadata from an audio file.
+    Prints relevant metadata for an audio file or directory.
     Args:
-        file_path (str): Path to the audio file.
+        file_or_directory_path (str): The path to an audio file or a directory containing audio files.
     Returns:
-        bool: True if metadata was successfully removed, False otherwise.
+        None
     """
-    logger.debug(f'cleaning metadata for "{file_path}"')
+    logger.info(f'getting metadata for "{file_or_directory_path}"')
 
-    if not os.path.isfile(file_path):
-        logger.error(f'file "{file_path}" does not exist')
-        return False
+    if os.path.isfile(file_or_directory_path):
+        display_data(_get_headers(), _get_metadata_file(file_or_directory_path))
 
-    try:
-        audio = File(file_path, easy=True)
-        if audio is None:
-            logger.error(f'corrupt file "{file_path}"')
-            return False
+    elif os.path.isdir(file_or_directory_path):
+        display_data(_get_headers(), _get_metadata_directory(file_or_directory_path))
 
-        audio.delete()
-        audio.save()
-        logger.info(f'cleaned metadata for "{file_path}"')
-        return True
-
-    except Exception as e:
-        logger.error(f"failed to clean metadata for {file_path}: {e}")
-        return False
-
-
-def clean_metadata_directory(directory_path: str) -> bool:
-    """
-    Removes all metadata from audio files in a directory.
-    Args:
-        directory_path (str): The directory containing audio files.
-    Returns:
-        bool: True if metadata was successfully removed from all the MP3 files, False otherwise.
-    """
-    logger.debug(f'cleaning metadata in "{directory_path}"')
-
-    if not os.path.isdir(directory_path):
-        logger.error(f'directory "{directory_path}" does not exist')
-        return False
-
-    allCleaned = True
-
-    for root, _, files in os.walk(directory_path):
-        for file in files:
-            if file.endswith(".mp3"):
-                if not clean_metadata_file(os.path.join(root, file)):
-                    allCleaned = False
-
-    return allCleaned
+    else:
+        logger.error(f'"{file_or_directory_path}" is not a valid file or directory')
 
 
 def clean_metadata(file_or_directory_path: str) -> bool:
@@ -77,108 +42,12 @@ def clean_metadata(file_or_directory_path: str) -> bool:
     logger.info(f'cleaning metadata for "{file_or_directory_path}"')
 
     if os.path.isfile(file_or_directory_path):
-        return clean_metadata_file(file_or_directory_path)
+        return _clean_metadata_file(file_or_directory_path)
     elif os.path.isdir(file_or_directory_path):
-        return clean_metadata_directory(file_or_directory_path)
+        return _clean_metadata_directory(file_or_directory_path)
     else:
         logger.error(f'"{file_or_directory_path}" is not a valid file or directory')
         return False
-
-
-def get_metadata_file(file_path: str) -> List[Dict[str, str]]:
-    """
-    Prints relevant metadata for an MP3 file.
-    Args:
-        file_path (str): The path to the MP3 file.
-    Returns:
-        List[Dict[str, str]]: A list of dictionaries containing the metadata for the MP3 file.
-    """
-    logger.debug(f'printing metadata for "{file_path}"')
-
-    obj = {
-        "file": os.path.basename(file_path),
-        "title": "",
-        "artist": "",
-        "album": "",
-        "composer": "",
-        "year": "",
-        "genre": "",
-        "comments": "",
-    }
-
-    if not os.path.isfile(file_path):
-        logger.error(f'file "{file_path}" does not exist')
-        return [obj]
-
-    try:
-        audio = MP3(file_path, ID3=ID3)
-        tags = audio.tags
-
-        obj["title"] = tags.get("TIT2", "")
-        obj["artist"] = tags.get("TPE1", "")
-        obj["album"] = tags.get("TALB", "")
-        obj["composer"] = tags.get("TCOM", "")
-        obj["year"] = tags.get("TDRC", "")
-        obj["genre"] = tags.get("TCON", "")
-        obj["comments"] = " ".join(next((comm.text for comm in tags.getall("COMM") if comm.lang == "eng"), []))
-
-    except Exception as e:
-        logger.error(f'metadata error for "{file_path}": {e}')
-
-    return [obj]
-
-
-def get_metadata_directory(directory_path: str) -> List[Dict[str, str]]:
-    """
-    Prints relevant metadata for all MP3 files in a directory.
-    Args:
-        directory_path (str): The path to the directory containing MP3 files.
-    Returns:
-        List[Dict[str, str]]: A list of dictionaries containing the metadata for all MP3 files in the directory.
-    """
-    logger.debug(f'printing metadata in "{directory_path}"')
-
-    if not os.path.isdir(directory_path):
-        logger.error(f'directory "{directory_path}" does not exist')
-        return False
-
-    obj = []
-
-    for root, _, files in os.walk(directory_path):
-        for file in files:
-            if file.endswith(".mp3"):
-                obj.extend(get_metadata_file(os.path.join(root, file)))
-
-    return obj
-
-
-def print_metadata(file_or_directory_path: str) -> None:
-    """
-    Prints relevant metadata for an audio file or directory.
-    Args:
-        file_or_directory_path (str): The path to an audio file or a directory containing audio files.
-    Returns:
-        None
-    """
-    logger.info(f'getting metadata for "{file_or_directory_path}"')
-
-    if os.path.isfile(file_or_directory_path):
-        display_data(get_headers(), get_metadata_file(file_or_directory_path))
-
-    elif os.path.isdir(file_or_directory_path):
-        display_data(get_headers(), get_metadata_directory(file_or_directory_path))
-
-    else:
-        logger.error(f'"{file_or_directory_path}" is not a valid file or directory')
-
-
-def get_headers() -> List[str]:
-    """
-    Returns the headers for the metadata table.
-    Returns:
-        List[str]: A list of strings representing the headers for tabular display.
-    """
-    return ["file", "title", "artist", "album", "composer", "year", "genre", "comments"]
 
 
 def set_metadata(file_path: str, title: str, artist: str, album: str, composer: str, year: int, genre: str, comments: str) -> bool:
@@ -241,3 +110,134 @@ def set_metadata(file_path: str, title: str, artist: str, album: str, composer: 
     except Exception as e:
         logger.error(f'metadata error for "{file_path}": {e}')
         return False
+
+
+def _clean_metadata_directory(directory_path: str) -> bool:
+    """
+    Removes all metadata from audio files in a directory.
+    Args:
+        directory_path (str): The directory containing audio files.
+    Returns:
+        bool: True if metadata was successfully removed from all the MP3 files, False otherwise.
+    """
+    logger.debug(f'cleaning metadata in "{directory_path}"')
+
+    if not os.path.isdir(directory_path):
+        logger.error(f'directory "{directory_path}" does not exist')
+        return False
+
+    allCleaned = True
+
+    for root, _, files in os.walk(directory_path):
+        for file in files:
+            if file.endswith(".mp3"):
+                if not _clean_metadata_file(os.path.join(root, file)):
+                    allCleaned = False
+
+    return allCleaned
+
+
+def _clean_metadata_file(file_path: str) -> bool:
+    """
+    Removes all metadata from an audio file.
+    Args:
+        file_path (str): Path to the audio file.
+    Returns:
+        bool: True if metadata was successfully removed, False otherwise.
+    """
+    logger.debug(f'cleaning metadata for "{file_path}"')
+
+    if not os.path.isfile(file_path):
+        logger.error(f'file "{file_path}" does not exist')
+        return False
+
+    try:
+        audio = File(file_path, easy=True)
+        if audio is None:
+            logger.error(f'corrupt file "{file_path}"')
+            return False
+
+        audio.delete()
+        audio.save()
+        logger.info(f'cleaned metadata for "{file_path}"')
+        return True
+
+    except Exception as e:
+        logger.error(f"failed to clean metadata for {file_path}: {e}")
+        return False
+
+
+def _get_metadata_file(file_path: str) -> List[Dict[str, str]]:
+    """
+    Prints relevant metadata for an MP3 file.
+    Args:
+        file_path (str): The path to the MP3 file.
+    Returns:
+        List[Dict[str, str]]: A list of dictionaries containing the metadata for the MP3 file.
+    """
+    logger.debug(f'printing metadata for "{file_path}"')
+
+    obj = {
+        "file": os.path.basename(file_path),
+        "title": "",
+        "artist": "",
+        "album": "",
+        "composer": "",
+        "year": "",
+        "genre": "",
+        "comments": "",
+    }
+
+    if not os.path.isfile(file_path):
+        logger.error(f'file "{file_path}" does not exist')
+        return [obj]
+
+    try:
+        audio = MP3(file_path, ID3=ID3)
+        tags = audio.tags
+
+        obj["title"] = tags.get("TIT2", "")
+        obj["artist"] = tags.get("TPE1", "")
+        obj["album"] = tags.get("TALB", "")
+        obj["composer"] = tags.get("TCOM", "")
+        obj["year"] = tags.get("TDRC", "")
+        obj["genre"] = tags.get("TCON", "")
+        obj["comments"] = " ".join(next((comm.text for comm in tags.getall("COMM") if comm.lang == "eng"), []))
+
+    except Exception as e:
+        logger.error(f'metadata error for "{file_path}": {e}')
+
+    return [obj]
+
+
+def _get_metadata_directory(directory_path: str) -> List[Dict[str, str]]:
+    """
+    Prints relevant metadata for all MP3 files in a directory.
+    Args:
+        directory_path (str): The path to the directory containing MP3 files.
+    Returns:
+        List[Dict[str, str]]: A list of dictionaries containing the metadata for all MP3 files in the directory.
+    """
+    logger.debug(f'printing metadata in "{directory_path}"')
+
+    if not os.path.isdir(directory_path):
+        logger.error(f'directory "{directory_path}" does not exist')
+        return False
+
+    obj = []
+
+    for root, _, files in os.walk(directory_path):
+        for file in files:
+            if file.endswith(".mp3"):
+                obj.extend(_get_metadata_file(os.path.join(root, file)))
+
+    return obj
+
+
+def _get_headers() -> List[str]:
+    """
+    Returns the headers for the metadata table.
+    Returns:
+        List[str]: A list of strings representing the headers for tabular display.
+    """
+    return ["file", "title", "artist", "album", "composer", "year", "genre", "comments"]
