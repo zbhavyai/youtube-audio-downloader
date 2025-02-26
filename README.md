@@ -1,53 +1,74 @@
 # YouTube Audio Downloader
 
-### Setup
+A python script to download and manage metadata for YouTube audio files. The script supports individual file operations and batch processing via a CSV file.
 
-1. Install dependencies
+## Features
 
-   ```shell
-   pip install --requirement requirements.txt
-   ```
+- **Metadata Management**: Print, clean, and set ID3 tags.
+- **YouTube Audio Download**: Download audio from a YouTube URL.
+- **CSV Processing**: Perform bulk operations based on a CSV file.
 
-2. Print the contents of the CSV file
+## Installation
 
-   ```shell
-   python -m src --csv samples/data.csv --testcsv
-   ```
+1. Clone the repository
 
-3. Downloading audios from CSV
+2. Install dependencies
 
    ```shell
-   python -m src --csv samples/data.csv --download
+   pip install -r requirements.txt
    ```
 
-4. Downloading a single audio
+3. Print the version
 
    ```shell
-   python -m src --url https://www.youtube.com/watch?v=D9G1VOjN_84 --filename enemy
+   python -m src version
    ```
 
-### Running with Docker
+## Usage
 
-1. Build the docker image
+Run the script using
 
-   ```shell
-   docker build --tag youtube-audio-downloader:1.0.0 .
-   ```
+```shell
+python -m src <group> <action> [options]
+```
 
-2. Print the contents of the CSV file
+### Command Groups & Actions
 
-   ```shell
-   docker container run --volume $(pwd):/app/output --rm youtube-audio-downloader:1.0.0 --csv samples/data.csv --testcsv
-   ```
+#### 1. Metadata Operations
 
-3. Downloading audios from CSV
+```shell
+python -m src metadata --print --file <FILE_OR_DIRECTORY>
 
-   ```shell
-   docker container run --volume $(pwd):/app/output --rm youtube-audio-downloader:1.0.0 --csv samples/data.csv --download
-   ```
+python -m src metadata --clean --file <FILE_OR_DIRECTORY>
 
-4. Downloading a single audio
+python -m src metadata --set --file <FILE_OR_DIRECTORY> \
+    --title <TITLE> \
+    --artist <ARTIST> \
+    --year <YEAR> \
+    --composer <COMPOSER> \
+    --comment <COMMENT> \
+    --genre <GENRE> \
+    --album <ALBUM>
+```
 
-   ```shell
-   docker container run --volume $(pwd)/output:/app/output --rm youtube-audio-downloader:1.0.0 --url https://www.youtube.com/watch?v=D9G1VOjN_84 --filename enemy
-   ```
+#### 2. Download Audio from YouTube
+
+```shell
+python -m src download --url <YOUTUBE_URL> --output <OUTPUT_FILE>
+```
+
+#### 3. CSV Processing
+
+```shell
+python -m src csv --file <CSV_FILE> --print
+python -m src csv --file <CSV_FILE> --download
+```
+
+## Running with Docker
+
+A Dockerfile is provided for containerized execution. Build and run the image:
+
+```shell
+docker build --tag youtube-audio-downloader:1.0.0 .
+docker container run --rm --volume $(pwd):/app/output youtube-audio-downloader:1.0.0 <group> <action> [options]
+```
