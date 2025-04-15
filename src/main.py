@@ -81,7 +81,7 @@ def main():
             set_metadata(args.file, args.title, args.artist, args.year, args.composer, args.comment, args.genre, args.album)
 
     elif args.group == "download":
-        download_audio(args.url, args.output, OUTPUT_DIR)
+        download_audio(args.url, "00:00:00", "00:00:00", args.output, OUTPUT_DIR)
 
     elif args.group == "trim":
         # trim_audio(args.file, args.start, args.end, args.output)
@@ -92,7 +92,7 @@ def main():
             headers, data = read_csv(args.file)
             display_data(headers, data)
         elif args.download:
-            download_audio_from_csv(args.file)
+            download_audio_from_csv(args.file, OUTPUT_DIR)
 
     elif args.group == "version":
         logger.info(f"version: {VERSION}")

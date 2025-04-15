@@ -11,7 +11,7 @@ from .metadata import set_metadata
 logger = get_logger(__name__)
 
 
-def download_audio(yt_link: str, file_name: str, output_directory: str) -> Tuple[bool, str]:
+def download_audio(yt_link: str, start_time, end_time, file_name: str, output_directory: str) -> Tuple[bool, str]:
     """
     Downloads audio from a YouTube link and saves it as an audio file in the specified output directory.
     Args:
