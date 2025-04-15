@@ -1,6 +1,6 @@
 # YouTube Audio Downloader
 
-A python script to download and manage metadata for YouTube audio files. The script supports individual file operations and batch processing via a CSV file.
+A python script to download, trim, and manage metadata for YouTube audio files. The script supports individual file operations and batch processing via CSV.
 
 ## Features
 
@@ -72,3 +72,7 @@ A Dockerfile is provided for containerized execution. Build and run the image:
 docker build --tag youtube-audio-downloader:1.0.0 .
 docker container run --rm --volume $(pwd):/app/output youtube-audio-downloader:1.0.0 <group> <action> [options]
 ```
+
+## License
+
+This project is licensed under the [MIT License](./LICENSE).
