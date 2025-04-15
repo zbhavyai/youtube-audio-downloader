@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import argparse
 
 from .config import OUTPUT_DIR, VERSION, get_logger
@@ -102,7 +100,3 @@ def main():
     else:
         logger.error("Invalid action specified.")
         parser.error("Invalid action specified.")
-
-
-if __name__ == "__main__":
-    main()
