@@ -12,7 +12,7 @@ os.makedirs(LOG_DIR, exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)5s] %(module)8s (%(lineno)3d) %(funcName)s: %(message)s",
+    format="%(asctime)s [%(levelname)7s] %(module)8s (%(lineno)3d) %(funcName)s: %(message)s",
     handlers=[
         logging.StreamHandler(),
         logging.FileHandler(LOG_FILE, mode="w", encoding="utf-8"),
